@@ -3,10 +3,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class ListComparisonMain {
 	final static int EXECUTIONS = 1000;
+	static Map<Integer, Runnable> methods = new HashMap<>();
+	static FileWriter fw;
 
 	public static void main(String[] args) {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
@@ -17,128 +21,67 @@ public class ListComparisonMain {
 		LinkedList<Integer> ll = new LinkedList<Integer>();
 		ll.add(1);
 		
+		//populate methods map
+		methods.put(0, () -> l.length());
+		methods.put(1, () -> ll.size());
+		methods.put(2, () -> l.addHead(50));
+		methods.put(3, () -> ll.addFirst(50));
+		methods.put(4, () -> l.addTail(50));
+		methods.put(5, () -> ll.addLast(50));
+		methods.put(6, () -> l.addElem(50, 50));
+		methods.put(7, () -> ll.add(50, 50));
+		methods.put(8, () -> l.swap(50, 100));
+		methods.put(9, () -> Collections.swap(ll, 50, 100));
+		methods.put(10, () -> l.deleteElem(50));
+		methods.put(11, () -> ll.remove(50));
+		methods.put(12, () -> l.deleteTail());
+		methods.put(13, () -> ll.removeLast());
+		methods.put(14, () -> l.deleteHead());
+		methods.put(15, () -> ll.removeFirst());
+		
+		
 		System.out.println("Durchläufe: "+EXECUTIONS);
 		System.out.println("\tMethode\t\t|\tMyList\t\t|\tLinkedList");
 		System.out.println("------------------------+-----------------------+-------------------------");
 		
 		try {
-			FileWriter fw = new FileWriter("petrovic_ListComparison_"+timeStamp+".txt");
+			fw = new FileWriter("petrovic_ListComparison_"+timeStamp+".txt");
 		    fw.write("Durchläufe: "+EXECUTIONS+"\n");
 		    fw.write("\tMethode\t\t|\tMyList\t\t|\tLinkedList\n");
 		    fw.write("------------------------+-----------------------+-------------------------\n");
 		    
-		    //Length
-			long startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.length();
-			long time = getTime(startTime);
-			System.out.print("\tlength\t\t|\t"+time+"ns\t\t|");
-			fw.write("\tlength\t\t|\t"+time+"ns\t\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.size();
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//addHead
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.addHead(i);
-			time = getTime(startTime);
-			System.out.print("\taddHead\t\t|\t"+time+"ns\t|");
-			fw.write("\taddHead\t\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.addFirst(i);
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//addTail
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.addTail(i);
-			time = getTime(startTime);
-			System.out.print("\taddTail\t\t|\t"+time+"ns\t|");
-			fw.write("\taddTail\t\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.addLast(i);
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//add
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.addElem(i,50);
-			time = getTime(startTime);
-			System.out.print("\tadd\t\t|\t"+time+"ns\t|");
-			fw.write("\tadd\t\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.add(50,i);
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//swap
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.swap(50, 100);
-			time = getTime(startTime);
-			System.out.print("\tswap\t\t|\t"+time+"ns\t|");
-			fw.write("\tswap\t\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) Collections.swap(ll, 50, 100);;
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//delete
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.deleteElem(50);
-			time = getTime(startTime);
-			System.out.print("\tdelete\t\t|\t"+time+"ns\t|");
-			fw.write("\tdelete\t\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.remove(50);
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//deleteTail
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.deleteTail();
-			time = getTime(startTime);
-			System.out.print("\tdeleteTail\t|\t"+time+"ns\t|");
-			fw.write("\tdeleteTail\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.removeLast();
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
-			
-			//deleteHead
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) l.deleteHead();
-			time = getTime(startTime);
-			System.out.print("\tdeleteHead\t|\t"+time+"ns\t|");
-			fw.write("\tdeleteHead\t|\t"+time+"ns\t|");
-			
-			startTime = getCurrentTime();
-			for (int i = 0; i < EXECUTIONS; i++) ll.removeFirst();
-			time = getTime(startTime);
-			System.out.println("\t"+time+"ns");
-			fw.write("\t"+time+"ns\n");
+		    compareMethods("length", 0);
+		    compareMethods("addHead", 2);
+		    compareMethods("addTail", 4);
+		    compareMethods("addElem", 6);
+		    compareMethods("swap", 8);
+		    compareMethods("delete", 10);
+		    compareMethods("delTail", 12);
+		    compareMethods("delHead", 14);
 		    
 		    fw.close();
 		} catch (IOException e) {
 		    System.out.println("Fehler beim Erzeugen des Files!");
 		    e.printStackTrace();
 		}
+	}
+	public static void compareMethods(String methodName, int firstMethod) throws IOException {
+		//firstMethod
+		long time = methodTime(firstMethod);
+		System.out.print("\t"+methodName+"\t\t|\t"+time+"ns\t|");
+		fw.write("\t"+methodName+"\t\t|\t"+time+"ns\t|");
 		
-		
-		
+		//secondMethod
+		time = methodTime(firstMethod+1);
+		System.out.println("\t"+time+"ns");
+		fw.write("\t"+time+"ns\n");
+	}
+	public static long methodTime(int method) {
+		long startTime = getCurrentTime();
+		for (int i = 0; i < EXECUTIONS; i++) {
+			methods.get(method).run();
+		}
+		return getTime(startTime);
 	}
 	public static long getTime(long startTime) {
 		return getCurrentTime() - startTime;
