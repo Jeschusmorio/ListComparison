@@ -9,7 +9,9 @@ import java.util.Map;
 
 public class ListComparisonMain {
 	final static int EXECUTIONS = 1000;
-	static Map<Integer, Runnable> methods = new HashMap<>();
+	static Map<Integer, Runnable> DCLmethods = new HashMap<>();
+	static Map<Integer, Runnable> LLmethods = new HashMap<>();
+	static Map<Integer, Runnable> ArrayMethods = new HashMap<>();
 	static FileWriter fw;
 
 	public static void main(String[] args) {
@@ -17,47 +19,61 @@ public class ListComparisonMain {
 		LocalDateTime now = LocalDateTime.now();
 		String timeStamp = dtf.format(now);
 		
+		//set all lists and the array to the same values
 		List l = new List(1);
 		LinkedList<Integer> ll = new LinkedList<Integer>();
 		ll.add(1);
+		int[] arr = new int[EXECUTIONS * 3 + 1];
+		arr[0] = 1;
 		
-		//populate methods map
-		methods.put(0, () -> l.length());
-		methods.put(1, () -> ll.size());
-		methods.put(2, () -> l.addHead(50));
-		methods.put(3, () -> ll.addFirst(50));
-		methods.put(4, () -> l.addTail(50));
-		methods.put(5, () -> ll.addLast(50));
-		methods.put(6, () -> l.addElem(50, 50));
-		methods.put(7, () -> ll.add(50, 50));
-		methods.put(8, () -> l.swap(50, 100));
-		methods.put(9, () -> Collections.swap(ll, 50, 100));
-		methods.put(10, () -> l.deleteElem(50));
-		methods.put(11, () -> ll.remove(50));
-		methods.put(12, () -> l.deleteTail());
-		methods.put(13, () -> ll.removeLast());
-		methods.put(14, () -> l.deleteHead());
-		methods.put(15, () -> ll.removeFirst());
+		//populate DCLmethods map
+		DCLmethods.put(0, () -> l.length());
+		DCLmethods.put(1, () -> l.addHead(50));
+		DCLmethods.put(2, () -> l.addTail(50));
+		DCLmethods.put(3, () -> l.addElem(50, 50));
+		DCLmethods.put(4, () -> l.swap(50, 100));
+		DCLmethods.put(5, () -> l.deleteElem(50));
+		DCLmethods.put(6, () -> l.deleteTail());
+		DCLmethods.put(7, () -> l.deleteHead());
 		
+		//populate LLmethods map
+		LLmethods.put(0, () -> ll.size());
+		LLmethods.put(1, () -> ll.addFirst(50));
+		LLmethods.put(2, () -> ll.addLast(50));
+		LLmethods.put(3, () -> ll.add(50, 50));
+		LLmethods.put(4, () -> Collections.swap(ll, 50, 100));
+		LLmethods.put(5, () -> ll.remove(50));
+		LLmethods.put(6, () -> ll.removeLast());
+		LLmethods.put(7, () -> ll.removeFirst());
+		
+		//populate ArrayMethods map
+		ArrayMethods.put(0, () -> LCArrayMethods.getLength(arr));
+		ArrayMethods.put(1, () -> LCArrayMethods.addFirst(arr, 50));
+		ArrayMethods.put(2, () -> LCArrayMethods.addLast(arr, 50));
+		ArrayMethods.put(3, () -> LCArrayMethods.add(arr, 50, 50));
+		ArrayMethods.put(4, () -> LCArrayMethods.swap(arr, 50, 100));
+		ArrayMethods.put(5, () -> LCArrayMethods.delete(arr, 50));
+		ArrayMethods.put(6, () -> LCArrayMethods.deleteLast(arr));
+		ArrayMethods.put(7, () -> LCArrayMethods.deleteFirst(arr));
 		
 		System.out.println("Durchläufe: "+EXECUTIONS);
-		System.out.println("\tMethode\t\t|\tMyList\t\t|\tLinkedList");
-		System.out.println("------------------------+-----------------------+-------------------------");
+		System.out.println("\tMethode\t\t|\tMyList\t\t|\tLinkedList\t|\tArray");
+		System.out.println("------------------------+-----------------------+-----------------------+--------------------");
 		
 		try {
 			fw = new FileWriter("petrovic_ListComparison_"+timeStamp+".txt");
 		    fw.write("Durchläufe: "+EXECUTIONS+"\n");
-		    fw.write("\tMethode\t\t|\tMyList\t\t|\tLinkedList\n");
-		    fw.write("------------------------+-----------------------+-------------------------\n");
+		    fw.write("\tMethode\t\t|\tMyList\t\t|\tLinkedList\t|\tArray\n");
+		    fw.write("------------------------+-----------------------+-----------------------+--------------------\n");
 		    
 		    compareMethods("length", 0);
-		    compareMethods("addHead", 2);
-		    compareMethods("addTail", 4);
-		    compareMethods("addElem", 6);
-		    compareMethods("swap", 8);
-		    compareMethods("delete", 10);
-		    compareMethods("delTail", 12);
-		    compareMethods("delHead", 14);
+		    compareMethods("addHead", 1);
+		    compareMethods("addTail", 2);
+		    compareMethods("addElem", 3);
+		    compareMethods("swap", 4);
+		    compareMethods("delete", 5);
+		    compareMethods("delTail", 6);
+		    compareMethods("delHead", 7);
 		    
 		    fw.close();
 		} catch (IOException e) {
@@ -65,21 +81,26 @@ public class ListComparisonMain {
 		    e.printStackTrace();
 		}
 	}
-	public static void compareMethods(String methodName, int firstMethod) throws IOException {
-		//firstMethod
-		long time = methodTime(firstMethod);
+	public static void compareMethods(String methodName, int method) throws IOException {
+		//DCL
+		long time = methodTime(DCLmethods, method);
 		System.out.print("\t"+methodName+"\t\t|\t"+time+"ns\t|");
 		fw.write("\t"+methodName+"\t\t|\t"+time+"ns\t|");
 		
-		//secondMethod
-		time = methodTime(firstMethod+1);
+		//LL
+		time = methodTime(LLmethods, method);
+		System.out.print("\t"+time+"ns\t|");
+		fw.write("\t"+time+"ns\t|");
+		
+		//Array
+		time = methodTime(ArrayMethods, method);
 		System.out.println("\t"+time+"ns");
 		fw.write("\t"+time+"ns\n");
 	}
-	public static long methodTime(int method) {
+	public static long methodTime(Map<Integer, Runnable> map, int method) {
 		long startTime = getCurrentTime();
 		for (int i = 0; i < EXECUTIONS; i++) {
-			methods.get(method).run();
+			map.get(method).run();
 		}
 		return getTime(startTime);
 	}
