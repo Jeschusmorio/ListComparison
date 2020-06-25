@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class ListComparisonMain {
-	final static int EXECUTIONS = 1000;
+	final static int EXECUTIONS = 10000;
 	static Map<Integer, Runnable> DCLmethods = new HashMap<>();
 	static Map<Integer, Runnable> LLmethods = new HashMap<>();
 	static Map<Integer, Runnable> ArrayMethods = new HashMap<>();
@@ -84,18 +84,18 @@ public class ListComparisonMain {
 	public static void compareMethods(String methodName, int method) throws IOException {
 		//DCL
 		long time = methodTime(DCLmethods, method);
-		System.out.print("\t"+methodName+"\t\t|\t"+time+"ns\t|");
-		fw.write("\t"+methodName+"\t\t|\t"+time+"ns\t|");
+		System.out.print("\t"+methodName+"\t\t|\t"+time/EXECUTIONS+"ns\t\t|");
+		fw.write("\t"+methodName+"\t\t|\t"+time/EXECUTIONS+"ns\t\t|");
 		
 		//LL
 		time = methodTime(LLmethods, method);
-		System.out.print("\t"+time+"ns\t|");
-		fw.write("\t"+time+"ns\t|");
+		System.out.print("\t"+time/EXECUTIONS+"ns\t\t|");
+		fw.write("\t"+time/EXECUTIONS+"ns\t\t|");
 		
 		//Array
 		time = methodTime(ArrayMethods, method);
-		System.out.println("\t"+time+"ns");
-		fw.write("\t"+time+"ns\n");
+		System.out.println("\t"+time/EXECUTIONS+"ns");
+		fw.write("\t"+time/EXECUTIONS+"ns\n");
 	}
 	public static long methodTime(Map<Integer, Runnable> map, int method) {
 		long startTime = getCurrentTime();
